@@ -58,7 +58,7 @@ To build OpenC2X, do:
     
 ### Starting OpenC2X
 If the previous steps worked correctly, then OpenC2X is ready to run. To do so, just run the following:  
-    ```
-    apt install tmux
-    runOpenC2X.sh
-    ```
+```
+apt install tmux
+runOpenC2X.sh
+```
