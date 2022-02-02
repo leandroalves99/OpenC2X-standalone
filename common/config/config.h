@@ -28,7 +28,7 @@
 #include <fstream>
 #include <stdlib.h> 
 #include <string.h>
-#include <uci.h>
+#include <uci/uci.h>
 #include <algorithm>
 
 
