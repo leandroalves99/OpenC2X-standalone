@@ -1,37 +1,57 @@
-----------------------------------------------------------------------------------------------------
-                                             OpenC2X
-----------------------------------------------------------------------------------------------------
-For latest updates on OpenC2X, visit http://www.ccs-labs.org/software/openc2x/
+## OpenC2X Standalone
+This version of OpenC2X is patched to work only with the latest version of Debian (Debian 11), at the time of writting. Maybe it works with Ubuntu 20.04 LTS, but I didn't tested it.
 
-On Ubuntu 16.04, follow the below mentioned steps to get OpenC2X up and running.
-For other OS users, we recommend you to setup a virtual box with Ubuntu 16.04.
+### Installation 
+Before proceeding to the installation of OpenC2X, it's necessary to install UCI, or OpenC2X won't build.
+To install UCI do the following:
+1. Install required dependencies
+  `apt install cmake lua5.2`
+2. Since UCI depends on libubox library, libubox needs to be installed:
+  `git clone git://nbd.name/luci2/libubox.git libubox
+  cd libubox
+  `
+3. Build and install libubox:
+  `mkdir build && cd build
+  cmake ..
+  make ubox
+  `
+  `sudo mkdir -p /usr/local/include/libubox
+  sudo cp ../*.h /usr/local/include/libubox
+  sudo cp libubox.so /usr/local/lib
+  sudo ldconfig
+  `
+4. Get UCI from git:
+  `git clone git://nbd.name/uci.git uci
+  cd uci
+  `
+5. Build and install UCI:
+  `mkdir build && cd build
+  cmake ..
+  make uci cli
+  `
+  `sudo mkdir -p /usr/local/include/uci
+  sudo cp ../uci.h ../uci_config.h /usr/local/include/uci
+  sudo cp ../uci_blob.h ../ucimap.h /usr/local/include/uci
+  sudo cp libuci.so /usr/local/lib
+  sudo cp uci /usr/local/bin
+  sudo ldconfig
+  `
 
-OpenC2X source is organized in the tree structure like this:
+To build OpenC2X, do:
+1. Install dependencies required by OpenC2X:
+`apt install libboost-all-dev protobuf-compiler libnl-genl-3-dev asn1c libzmq3-dev libgps-dev libsqlite3-dev`
 
-path_to_openc2x
-|
-└── OpenC2X
-    ├── CMakeLists.txt
-    ├── cam
-    ├── common
-    ├── dcc
-    ├── denm
-    ├── denmApp
-    ├── gps
-    ├── httpServer
-    ├── ldm
-    ├── obd2
-    └── kernel-patches
+2. Clone this repository:
+`git clone https://github.com/leandroalves99/OpenC2X-standalone.git
+cd OpenC2X-standalone`
 
-
-
-----------------------------------------------------------------------------------------------------
-1)                                         Installation
-----------------------------------------------------------------------------------------------------
-
-    $ echo "deb https://dl.bintray.com/fynnh/debian xenial main" | sudo tee -a /etc/apt/sources.list
-    $ sudo apt-get update
-    $ sudo apt-get install openc2x
+3. Build and install OpenC2X:
+`mkdir build && cd build
+cmake ..
+make clean
+make
+make install #sudo is required if it's executed by normal user
+`
 
 ----------------------------------------------------------------------------------------------------
 3)                                      Configurations
