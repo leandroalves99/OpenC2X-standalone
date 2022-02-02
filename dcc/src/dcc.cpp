@@ -120,13 +120,13 @@ DCC::DCC(bool setUpWlan) : mStrand(mIoService) {
 
 	initLeakyBuckets();
 
-	mTimerMeasureChannel = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(mConfig.DCC_measure_interval_Tm*1000));	//1000
-	mTimerMeasurePktStats = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(mConfig.DCC_collect_pkt_flush_stats*1000));	//1000
-	mTimerStateUpdate = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(mConfig.NDL_minDccSampling*1000));	//1000
-	mTimerDccInfo = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(mConfig.dccInfoInterval));
+	mTimerMeasureChannel = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(long(mConfig.DCC_measure_interval_Tm*1000)));	//1000
+	mTimerMeasurePktStats = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(long(mConfig.DCC_collect_pkt_flush_stats*1000)));	//1000
+	mTimerStateUpdate = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(long(mConfig.NDL_minDccSampling*1000)));	//1000
+	mTimerDccInfo = new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(long(mConfig.dccInfoInterval)));
 
 	for (Channels::t_access_category accessCategory : mAccessCategories) {	//create and map the timers for the four ACs
-		mTimerAddToken.insert(make_pair(accessCategory, new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(currentTokenInterval(accessCategory)*1000.00))));
+		mTimerAddToken.insert(make_pair(accessCategory, new boost::asio::deadline_timer(mIoService, boost::posix_time::millisec(long(currentTokenInterval(accessCategory)*1000)))));
 		mAddedFirstToken[accessCategory] = false;
 	}
 	mStatIdx = 0;
@@ -462,7 +462,7 @@ void DCC::measureChannel(const boost::system::error_code& ec) {
 	mChannelLoadInTimeUp.insert(mChannelLoad);	//add to RingBuffer
 	mChannelLoadInTimeDown.insert(mChannelLoad);
 
-	mTimerMeasureChannel->expires_at(mTimerMeasureChannel->expires_at() + boost::posix_time::milliseconds(mConfig.DCC_measure_interval_Tm*1000));	//1s
+	mTimerMeasureChannel->expires_at(mTimerMeasureChannel->expires_at() + boost::posix_time::milliseconds(long(mConfig.DCC_measure_interval_Tm*1000)));	//1s
 	mTimerMeasureChannel->async_wait(mStrand.wrap(boost::bind(&DCC::measureChannel, this, boost::asio::placeholders::error)));
 }
 
@@ -483,7 +483,7 @@ void DCC::measurePktStats(const boost::system::error_code& ec) {
 	prev_be_flush_req = mPktStats.be_flush_req;
 	prev_be_flush_not_req = mPktStats.be_flush_not_req;
 
-	mTimerMeasurePktStats->expires_at(mTimerMeasurePktStats->expires_at() + boost::posix_time::milliseconds(mConfig.DCC_collect_pkt_flush_stats*1000));	//1s
+	mTimerMeasurePktStats->expires_at(mTimerMeasurePktStats->expires_at() + boost::posix_time::milliseconds(long(mConfig.DCC_collect_pkt_flush_stats*1000)));	//1s
 	mTimerMeasurePktStats->async_wait(mStrand.wrap(boost::bind(&DCC::measurePktStats, this, boost::asio::placeholders::error)));
 }
 
@@ -505,7 +505,7 @@ void DCC::updateState(const boost::system::error_code& ec) {	//TODO: adjust to m
 	else if ((mCurrentStateId != STATE_UNDEF && mCurrentStateId != STATE_RELAXED && mCurrentStateId != STATE_RESTRICTED) && (clMinInTimeUp >= mConfig.NDL_maxChannelLoad))	//active -> restricted
 		setCurrentState(STATE_RESTRICTED);
 
-	mTimerStateUpdate->expires_at(mTimerStateUpdate->expires_at() + boost::posix_time::milliseconds(mConfig.NDL_minDccSampling*1000));	//1s
+	mTimerStateUpdate->expires_at(mTimerStateUpdate->expires_at() + boost::posix_time::milliseconds(long(mConfig.NDL_minDccSampling*1000)));	//1s
 	mTimerStateUpdate->async_wait(mStrand.wrap(boost::bind(&DCC::updateState, this, boost::asio::placeholders::error)));
 }
 
@@ -566,7 +566,7 @@ void DCC::addToken(const boost::system::error_code& ec, Channels::t_access_categ
 	mLastTokenAt[ac] = mTimerAddToken[ac]->expires_at();
 	mAddedFirstToken[ac] = true;
 
-	mTimerAddToken[ac]->expires_at(mLastTokenAt[ac] + boost::posix_time::milliseconds(currentTokenInterval(ac)*1000.00));	//fixed time interval depending on state and AC
+	mTimerAddToken[ac]->expires_at(mLastTokenAt[ac] + boost::posix_time::milliseconds(long(currentTokenInterval(ac)*1000)));	//fixed time interval depending on state and AC
 	mTimerAddToken[ac]->async_wait(mStrand.wrap(boost::bind(&DCC::addToken, this, boost::asio::placeholders::error, ac)));
 
 	mMutexLastTokenAt.unlock();
@@ -598,7 +598,7 @@ void DCC::rescheduleAddToken(Channels::t_access_category ac) {
 	if(mAddedFirstToken[ac]) {
 		mMutexLastTokenAt.lock();
 		//reschedule based on last token that was added (rather than time of state-switch)
-		boost::posix_time::ptime newTime = mLastTokenAt[ac] + boost::posix_time::milliseconds(currentTokenInterval(ac)*1000.00);
+		boost::posix_time::ptime newTime = mLastTokenAt[ac] + boost::posix_time::milliseconds(long(currentTokenInterval(ac)*1000));
 
 		mTimerAddToken[ac]->expires_at(newTime);
 		mTimerAddToken[ac]->async_wait(mStrand.wrap(boost::bind(&DCC::addToken, this, boost::asio::placeholders::error, ac)));
