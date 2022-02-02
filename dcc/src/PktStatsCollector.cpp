@@ -57,7 +57,7 @@ PktStatsCollector::PktStatsCollector(string ifname, double probeInterval, boost:
 	mProbeInterval = probeInterval;
 	mIfname = ifname;
 	mIoService = io;
-	mTimer = new boost::asio::deadline_timer(*mIoService, boost::posix_time::millisec(probeInterval * 1000));
+	mTimer = new boost::asio::deadline_timer(*mIoService, boost::posix_time::millisec(long(probeInterval * 1000)));
 }
 
 PktStatsCollector::~PktStatsCollector() {
@@ -221,7 +221,7 @@ void PktStatsCollector::probe(const boost::system::error_code &ec) {
 			NLM_F_DUMP);
 	nl_recvmsgs_default(mSocket);
 
-	mTimer->expires_from_now(boost::posix_time::millisec(mProbeInterval * 1000));
+	mTimer->expires_from_now(boost::posix_time::millisec(long(mProbeInterval * 1000)));
 	mTimer->async_wait(boost::bind(&PktStatsCollector::probe, this, boost::asio::placeholders::error));
 }
 
