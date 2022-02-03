@@ -26,7 +26,7 @@
  * @param callback  fn(data)
  */
 function requestMyMac(callback){
-	$.get("http://localhost:1188/my_mac",
+	$.get("http://"+getHostname()+":1188/my_mac",
 			function(data){
 		callback(data);
 	},"json");
@@ -38,7 +38,7 @@ function requestMyMac(callback){
  * @param callback fn(data)
  */
 function requestCam(callback){
-	$.post("http://localhost:1188/request_cam",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_cam",JSON.stringify({condition:"latest"}),
 			function(data/*status,xhr*/){
 		//console.log("data: "+data);
 		//console.log("status: "+status);
@@ -52,7 +52,7 @@ function requestCam(callback){
  * @param callback fn(data)
  */
 function requestCamInfo(callback){
-	$.post("http://localhost:1188/request_caminfo",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_caminfo",JSON.stringify({condition:"latest"}),
 			function(data){
 		callback(data.msgs[data.msgs.length-1]);
 	},"json");
@@ -64,7 +64,7 @@ function requestCamInfo(callback){
  * @param callback fn(data)
  */
 function requestDenm(callback){
-	$.post("http://localhost:1188/request_denm",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_denm",JSON.stringify({condition:"latest"}),
 			function(data){
 		callback(data);
 	},"json");
@@ -78,7 +78,7 @@ function requestDenm(callback){
  * @param callback fn(data)
  */
 function requestGps(callback){
-	$.post("http://localhost:1188/request_gps",JSON.stringify({condition:""}),
+	$.post("http://"+getHostname()+":1188/request_gps",JSON.stringify({condition:""}),
 			function(data){
 		callback(data.msgs[data.msgs.length-1]);
 	},"json");
@@ -92,7 +92,7 @@ function requestGps(callback){
  * @param callback fn(data)
  */
 function requestObd2(callback){
-	$.post("http://localhost:1188/request_obd2",JSON.stringify({condition:""}),
+	$.post("http://"+getHostname()+":1188/request_obd2",JSON.stringify({condition:""}),
 			function(data){
 		callback(data.msgs[data.msgs.length-1]);
 	},"json");
@@ -104,14 +104,14 @@ function requestObd2(callback){
  * @param callback fn(data)
  */
 function requestDccInfo(callback){
-	$.post("http://localhost:1188/request_dccinfo",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_dccinfo",JSON.stringify({condition:"latest"}),
 			function(data){
 		callback(data.msgs[data.msgs.length-1]);
 	},"json");
 }
 
 function requestAC_BE(callback){
-	$.post("http://localhost:1188/request_dccinfo",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_dccinfo",JSON.stringify({condition:"latest"}),
 			function(data){
 		var table = {};		
 		table["AC_BE"] = {
@@ -131,7 +131,7 @@ function requestAC_BE(callback){
 }
 
 function requestAC_VI(callback){
-	$.post("http://localhost:1188/request_dccinfo",JSON.stringify({condition:"latest"}),
+	$.post("http://"+getHostname()+":1188/request_dccinfo",JSON.stringify({condition:"latest"}),
 			function(data){
 		var table = {};
 		table["AC_VI"] = {
@@ -155,11 +155,22 @@ function requestAC_VI(callback){
  * via http request to httpServer
  */
 function triggerDenm(){
-	$.post("http://localhost:1188/trigger_denm",JSON.stringify({content: "triggered by GUI"}),	
+	$.post("http://"+getHostname()+":1188/trigger_denm",JSON.stringify({content: "triggered by GUI"}),	
 			function(data,status,xhr){
 		console.log("data: "+data);
 		console.log("status: "+status);
 	});
+}
+/**
+ * gets the current hostname
+ */
+function getHostname(){
+	var hostname = location.hostname;
+	if(hostname){
+		return hostname;
+	}else{
+		return "localhost";
+	}
 }
 
 /** @} */ // end of group
