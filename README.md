@@ -40,7 +40,7 @@ To install UCI do the following:
 To build OpenC2X, do:  
 1. Install dependencies required by OpenC2X:
     ```
-    apt install libboost-all-dev protobuf-compiler libnl-genl-3-dev asn1c libzmq3-dev libgps-dev libsqlite3-dev
+    apt install libboost-all-dev protobuf-compiler libnl-genl-3-dev asn1c libzmq3-dev libgps-dev libsqlite3-dev tmux
     ```
 2. Clone this repository:  
     ```
@@ -57,8 +57,9 @@ To build OpenC2X, do:
     ```
     
 ### Starting OpenC2X
-If the previous steps worked correctly, then OpenC2X is ready to run. To do so, just run the following:  
+If the previous steps worked correctly, then OpenC2X is ready to run. To do so, just run the following:
 ```
-apt install tmux
-runOpenC2X.sh
-```
+./scripts/runOpenC2X.sh     #To start OpenC2X
+./scripts/stopOpenC2X.sh    #To stop OpenC2X
+```  
+To access GUI, open **localhost:8000** in your browser. If OpenC2X is running in a remote machine, change localhost to your machine's ip address.
